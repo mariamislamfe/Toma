@@ -3,9 +3,6 @@
   height: 420vh;
   background: var(--plum);
 }
-.sc.is-static {
-  height: auto;
-}
 .sc__pin {
   position: sticky;
   top: 0;
@@ -15,10 +12,6 @@
   isolation: isolate;
   background: var(--plum);
   color: var(--cream);
-}
-.sc.is-static .sc__pin {
-  position: relative;
-  background: #2a0f04;
 }
 .sc__flood,
 .sc__rain {
@@ -232,16 +225,6 @@
   background: var(--green);
 }
 
-.sc.is-static .sc__scene {
-  position: relative;
-  opacity: 1 !important;
-  visibility: visible;
-  min-height: 80vh;
-}
-.sc.is-static .sc__img {
-  opacity: 1;
-  transform: none;
-}
 
 @media (max-width: 760px) {
   .sc {

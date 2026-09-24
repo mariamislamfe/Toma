@@ -39,8 +39,8 @@ export default function Branches() {
 
   return (
     <section id="branches" className="br" aria-labelledby="br-title">
-      <div className="br__bgword display" aria-hidden="true" key={cid} data-parallax="0.25">
-        {lang === 'ar' ? city.ar : city.en}
+      <div className="br__bgword display" aria-hidden="true" data-parallax="0.25">
+        <span key={cid}>{lang === 'ar' ? city.ar : city.en}</span>
       </div>
       <div className="br__inner">
         <div className="br__copy">
@@ -48,13 +48,11 @@ export default function Branches() {
           <h2 id="br-title" className="display br__title" data-reveal="mask">
             {t.branchesTitle}
           </h2>
-          <div className="br__cities" data-reveal="stagger" role="tablist" aria-label={t.branchesKicker}>
+          <div className="br__cities" data-reveal="stagger" role="group" aria-label={t.branchesKicker}>
             {cities.map((x) => (
               <button
                 key={x.id}
-                role="tab"
-                aria-selected={x.id === cid}
-                aria-controls="br-list"
+                aria-pressed={x.id === cid}
                 className={`br__city ${x.id === cid ? 'is-on' : ''}`}
                 onClick={() => setCid(x.id)}
               >
@@ -63,12 +61,12 @@ export default function Branches() {
               </button>
             ))}
           </div>
-          <ul id="br-list" className="br__list" role="tabpanel" key={cid}>
+          <ul className="br__list" key={cid} aria-live="polite">
             {city.branches.map((b, i) => (
               <li key={b.id} style={{ animationDelay: `${i * 80}ms` }}>
                 <span className="br__pin" aria-hidden="true" />
                 <strong>{lang === 'ar' ? b.ar : b.en}</strong>
-                <a href={mapsUrl(b)} target="_blank" rel="noopener" className="br__map">
+                <a href={mapsUrl(b)} target="_blank" rel="noopener noreferrer" className="br__map">
                   {t.openMap} ↗
                 </a>
               </li>

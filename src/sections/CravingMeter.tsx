@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { useI18n } from '../lib/i18n'
 import { useOrder } from '../lib/order'
-import { byId, kosharyLadder } from '../data/menu'
+import { byId, kosharyLadder, srcSet } from '../data/menu'
 import { useMagnetic } from '../lib/useMagnetic'
 import './meter.css'
 
@@ -81,7 +81,7 @@ export default function CravingMeter() {
 
         <div className="cm__plate" data-reveal="pop">
           <div className="cm__glow" aria-hidden="true" />
-          <img key={id} className="cm__img" src={p.img} alt={lang === 'ar' ? p.ar : p.en} loading="lazy" />
+          <img key={id} className="cm__img" src={p.img} srcSet={srcSet(p.img)} sizes="(max-width: 860px) 86vw, 40vw" alt={lang === 'ar' ? p.ar : p.en} width={900} height={900} loading="lazy" decoding="async" />
           <div className="cm__card">
             <span className="cm__pick">{t.meterPick}</span>
             <strong className="display">{lang === 'ar' ? p.ar : p.en}</strong>

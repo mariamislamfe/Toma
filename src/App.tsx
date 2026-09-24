@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
 import { I18nProvider, useI18n } from './lib/i18n'
 import { OrderProvider } from './lib/order'
-import { destroyScroll, initScroll, ScrollTrigger, useReducedMotion } from './lib/motion'
+import { destroyScroll, initScroll, ScrollTrigger } from './lib/motion'
 import { useReveal } from './lib/reveal'
 import Marquee from './components/Marquee'
-import MotionPrompt from './components/MotionPrompt'
 import Nav from './components/Nav'
 import OrderTicket from './components/OrderTicket'
 import Hero from './sections/Hero'
@@ -14,22 +13,19 @@ import CravingMeter from './sections/CravingMeter'
 import Branches from './sections/Branches'
 import AppPhone from './sections/AppPhone'
 import Finale from './sections/Finale'
+import SafeSection from './components/SafeSection'
 
 function Page() {
   const { lang } = useI18n()
-  const reduced = useReducedMotion()
   useEffect(() => {
-    if (reduced) return
     initScroll()
     return destroyScroll
-  }, [reduced])
-  useReveal(`${lang}-${reduced}`)
+  }, [])
+  useReveal(lang)
   // Layout changes with direction and font metrics; re-measure pins.
   useEffect(() => {
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh())
     document.fonts?.ready.then(() => ScrollTrigger.refresh())
-    return () => cancelAnimationFrame(id)
-  }, [lang, reduced])
+  }, [lang])
 
   return (
     <>
@@ -37,19 +33,18 @@ function Page() {
         {lang === 'ar' ? 'تخطّى للمنيو' : 'Skip to menu'}
       </a>
       <Nav />
-      <main key={`${lang}-${reduced}`}>
-        <Hero />
+      <main key={lang}>
+        <SafeSection><Hero /></SafeSection>
         <Marquee />
-        <SauceCrunch />
-        <MenuBoard />
-        <CravingMeter />
+        <SafeSection><SauceCrunch /></SafeSection>
+        <SafeSection><MenuBoard /></SafeSection>
+        <SafeSection><CravingMeter /></SafeSection>
         <Marquee tone="plum" reverse />
-        <Branches />
-        <AppPhone />
-        <Finale />
+        <SafeSection><Branches /></SafeSection>
+        <SafeSection><AppPhone /></SafeSection>
       </main>
+      <SafeSection key={`f-${lang}`}><Finale /></SafeSection>
       <OrderTicket />
-      <MotionPrompt />
     </>
   )
 }

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../lib/i18n'
 import { useOrder } from '../lib/order'
-import { categories, inCategory, byId, type CategoryId, type Product } from '../data/menu'
-import { gsap, ScrollTrigger, useReducedMotion } from '../lib/motion'
+import { categories, inCategory, byId, srcSet, type CategoryId, type Product } from '../data/menu'
+import { gsap } from '../lib/motion'
 import { useMagnetic } from '../lib/useMagnetic'
 import './menu.css'
 
@@ -17,6 +17,10 @@ function Dish({ p, state, alt }: { p: Product; state: 'in' | 'out'; alt: string 
     <img
       className={`mb__dish ${p.category === 'offers' ? 'mb__dish--banner' : ''} is-${state}`}
       src={p.img}
+      srcSet={srcSet(p.img)}
+      sizes="(max-width: 960px) 80vw, 42vw"
+      loading="lazy"
+      decoding="async"
       alt={state === 'in' ? alt : ''}
       aria-hidden={state === 'out'}
       draggable={false}
@@ -27,7 +31,6 @@ function Dish({ p, state, alt }: { p: Product; state: 'in' | 'out'; alt: string 
 export default function MenuBoard() {
   const { t, lang, num } = useI18n()
   const { add } = useOrder()
-  const reduced = useReducedMotion()
   const [cat, setCat] = useState<CategoryId>('koshary')
   const [cur, setCur] = useState(2)
   const [prev, setPrev] = useState<number | null>(null)
@@ -73,7 +76,6 @@ export default function MenuBoard() {
 
   // entrance: the board slides up like a sheet of paper over the previous chapter
   useEffect(() => {
-    if (reduced) return
     const el = root.current!
     const ctx = gsap.context(() => {
       gsap.from('.mb__board', {
@@ -90,9 +92,8 @@ export default function MenuBoard() {
         scrollTrigger: { trigger: el, start: 'top 80%', end: 'top 20%', scrub: 0.6 },
       })
     }, el)
-    ScrollTrigger.refresh()
     return () => ctx.revert()
-  }, [reduced])
+  }, [])
 
   const doAdd = () => {
     add(cur)
@@ -112,13 +113,11 @@ export default function MenuBoard() {
       <div className="mb__grid">
         {/* the price board */}
         <div className="mb__board">
-          <div className="mb__cats" role="tablist" aria-label={t.menuKicker}>
+          <div className="mb__cats" role="group" aria-label={t.menuKicker}>
             {categories.map((c) => (
               <button
                 key={c.id}
-                role="tab"
-                aria-selected={cat === c.id}
-                aria-controls="mb-list"
+                aria-pressed={cat === c.id}
                 className={`mb__cat ${cat === c.id ? 'is-on' : ''}`}
                 onClick={() => pickCat(c.id)}
               >
@@ -127,7 +126,7 @@ export default function MenuBoard() {
               </button>
             ))}
           </div>
-          <ul id="mb-list" className="mb__list" role="tabpanel" key={cat}>
+          <ul className="mb__list" key={cat} aria-label={lang === 'ar' ? categories.find((c) => c.id === cat)!.ar : categories.find((c) => c.id === cat)!.en}>
             {list.map((x) => (
               <li key={x.id}>
                 <button

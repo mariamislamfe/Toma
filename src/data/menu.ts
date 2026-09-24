@@ -72,6 +72,10 @@ export const products: Product[] = [
 ]
 
 export const byId = (id: number) => products.find((p) => p.id === id)!
+
+/** Every product photo ships at 900px plus a 480px `-sm` copy; let the browser pick. */
+export const srcSet = (img: string) => (img ? `${img.replace('.webp', '-sm.webp')} 480w, ${img} 900w` : undefined)
+export const HERO_SRCSET = '/food/hero-bowl-sm.webp 600w, /food/hero-bowl.webp 1000w'
 export const inCategory = (c: CategoryId) => products.filter((p) => p.category === c)
 
 /** Koshary ladder used by the craving meter — ordered by TOMA's own price/size. */

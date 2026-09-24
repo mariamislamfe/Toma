@@ -1,32 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../lib/i18n'
 import { useOrder } from '../lib/order'
-import { scrollToId, setMotionPref, useReducedMotion } from '../lib/motion'
+import { scrollState, scrollToId } from '../lib/motion'
 import { useMagnetic } from '../lib/useMagnetic'
 import './nav.css'
 
 export default function Nav() {
   const { t, lang, setLang, num } = useI18n()
   const { count, setOpen, pulse } = useOrder()
-  const reduced = useReducedMotion()
-  const [compact, setCompact] = useState(false)
-  const [bump, setBump] = useState(false)
+  // initial value comes from the cached scroll position (no layout read during the first render)
+  const [compact, setCompact] = useState(() => scrollState.y > 60)
   const orderRef = useRef<HTMLButtonElement>(null)
   useMagnetic(orderRef, 0.2)
 
   useEffect(() => {
     const on = () => setCompact(window.scrollY > 60)
-    on()
     window.addEventListener('scroll', on, { passive: true })
     return () => window.removeEventListener('scroll', on)
   }, [])
-
-  useEffect(() => {
-    if (!pulse) return
-    setBump(true)
-    const id = setTimeout(() => setBump(false), 450)
-    return () => clearTimeout(id)
-  }, [pulse])
 
   const go = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault()
@@ -46,15 +37,6 @@ export default function Nav() {
         </nav>
         <div className="nav__end">
           <button
-            className={`nav__motion ${reduced ? '' : 'is-on'}`}
-            onClick={() => setMotionPref(reduced ? 'on' : 'off')}
-            aria-pressed={!reduced}
-            aria-label={t.motionToggle}
-            title={t.motionToggle}
-          >
-            <span aria-hidden="true">{reduced ? '▶' : '❚❚'}</span>
-          </button>
-          <button
             className="nav__lang"
             onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
             aria-label={t.langSwitchLabel}
@@ -64,12 +46,14 @@ export default function Nav() {
           </button>
           <button
             ref={orderRef}
-            className={`nav__order ${bump ? 'is-bump' : ''}`}
+            className="nav__order"
             onClick={() => (count ? setOpen(true) : scrollToId('menu'))}
             aria-label={count ? `${t.ticket} (${count})` : t.navOrder}
           >
-            <span>{t.navOrder}</span>
-            {count > 0 && <b className="nav__count">{num(count)}</b>}
+            <span className={`nav__bump ${pulse ? 'is-on' : ''}`} key={pulse}>
+              <span>{t.navOrder}</span>
+              {count > 0 && <b className="nav__count">{num(count)}</b>}
+            </span>
           </button>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../lib/i18n'
 import { useOrder } from '../lib/order'
-import { byId, kosharyLadder } from '../data/menu'
+import { HERO_SRCSET, byId, kosharyLadder } from '../data/menu'
 import { HOTLINE, cities } from '../data/brand'
-import { isCoarse, scrollToId, useReducedMotion } from '../lib/motion'
+import { isCoarse, scrollToId } from '../lib/motion'
 import { useMagnetic } from '../lib/useMagnetic'
 import './hero.css'
 
@@ -15,7 +15,6 @@ const BOWL = byId(kosharyLadder[0])
 export default function Hero() {
   const { t, lang, num } = useI18n()
   const { add } = useOrder()
-  const reduced = useReducedMotion()
   const root = useRef<HTMLElement>(null)
   const cta = useRef<HTMLAnchorElement>(null)
   const [added, setAdded] = useState(false)
@@ -24,7 +23,7 @@ export default function Hero() {
   // a little depth on desktop: the bowl leans toward the cursor, the word drifts away from it
   useEffect(() => {
     const el = root.current!
-    if (reduced || isCoarse()) return
+    if (isCoarse()) return
     let raf = 0
     const move = (e: PointerEvent) => {
       const x = e.clientX / window.innerWidth - 0.5
@@ -40,7 +39,7 @@ export default function Hero() {
       el.removeEventListener('pointermove', move)
       cancelAnimationFrame(raf)
     }
-  }, [reduced])
+  }, [])
 
   const goMenu = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -91,6 +90,8 @@ export default function Hero() {
           <img
             className="hero__photo"
             src="/food/hero-bowl.webp"
+            srcSet={HERO_SRCSET}
+            sizes="(max-width: 760px) 92vw, 44vw"
             alt={lang === 'ar' ? 'طبق كشري تومة' : 'A bowl of TOMA koshary'}
             width={1000}
             height={1000}
@@ -146,7 +147,14 @@ export default function Hero() {
         </aside>
       </div>
 
-      <a className="hero__scroll" href="#sauce" onClick={(e) => (e.preventDefault(), scrollToId('sauce'))}>
+      <a
+        className="hero__scroll"
+        href="#sauce"
+        onClick={(e) => {
+          e.preventDefault()
+          scrollToId('sauce')
+        }}
+      >
         <span>{t.heroScroll}</span>
         <i aria-hidden="true">↓</i>
       </a>

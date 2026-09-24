@@ -49,6 +49,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   return <OrderCtx.Provider value={value}>{children}</OrderCtx.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- provider and its hook live together on purpose
 export function useOrder() {
   const c = useContext(OrderCtx)
   if (!c) throw new Error('useOrder outside provider')

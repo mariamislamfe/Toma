@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { gsap, ScrollTrigger, isLite, prefersReducedMotion } from './motion'
+import { gsap, ScrollTrigger, isLite } from './motion'
 
 /**
  * Site-wide scroll choreography, declared in markup:
@@ -68,13 +68,12 @@ function pauseOffscreen() {
     (es) => es.forEach((e) => e.target.classList.toggle('is-offscreen', !e.isIntersecting)),
     { rootMargin: '10% 0px' },
   )
-  document.querySelectorAll('main > section, main > footer').forEach((s) => io.observe(s))
+  document.querySelectorAll('main > section, .fn').forEach((s) => io.observe(s))
   return io
 }
 
 export function useReveal(key: string) {
   useEffect(() => {
-    if (prefersReducedMotion()) return
     const ctx = gsap.context(() => {})
     let io: IntersectionObserver | null = null
     const run = () => {
