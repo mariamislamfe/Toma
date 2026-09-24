@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { useI18n } from '../lib/i18n'
-import { isCoarse, scrollState } from '../lib/motion'
+import { isCoarse, scrollState, useReducedMotion } from '../lib/motion'
 import './marquee.css'
 
 /** A tilted street-sign ticker between chapters. Speeds up with scroll velocity and follows its direction. */
 export default function Marquee({ tone = 'orange', reverse = false }: { tone?: 'orange' | 'plum'; reverse?: boolean }) {
   const { lang, num } = useI18n()
+  const reduced = useReducedMotion()
   const track = useRef<HTMLDivElement>(null)
   const root = useRef<HTMLDivElement>(null)
 
@@ -14,10 +15,10 @@ export default function Marquee({ tone = 'orange', reverse = false }: { tone?: '
       ? ['كشري', 'رز', 'عدس', 'مكرونة', 'حمص', 'صلصة', 'دقة', 'بصل محمّر', `اطلب ${num(19397)}`]
       : ['Koshary', 'Rice', 'Lentils', 'Pasta', 'Chickpeas', 'Sauce', 'Da’a', 'Crispy onions', 'Order 19397']
 
-  const cssLoop = isCoarse()
+  const cssLoop = !reduced && isCoarse()
 
   useEffect(() => {
-    if (cssLoop) return
+    if (reduced || cssLoop) return
     const el = track.current!
     let x = 0
     let raf = 0
@@ -56,7 +57,7 @@ export default function Marquee({ tone = 'orange', reverse = false }: { tone?: '
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', measure)
     }
-  }, [reverse, cssLoop])
+  }, [reduced, reverse, cssLoop])
 
   const row = (k: string) =>
     words.map((w, i) => (

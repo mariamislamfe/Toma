@@ -3,7 +3,6 @@ import { useI18n } from '../lib/i18n'
 import { useOrder } from '../lib/order'
 import { byId } from '../data/menu'
 import { HOTLINE, ORDER_WEB } from '../data/brand'
-import { lockScroll } from '../lib/motion'
 import './ticket.css'
 
 /** Thermal-receipt order summary. Frontend only: hands off to TOMA's real channels. */
@@ -16,28 +15,11 @@ export default function OrderTicket() {
   useEffect(() => {
     if (!open) return
     lastFocus.current = document.activeElement as HTMLElement
-    lockScroll(true)
     requestAnimationFrame(() => panel.current?.focus())
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') return setOpen(false)
-      if (e.key !== 'Tab' || !panel.current) return
-      // keep Tab inside the dialog
-      const f = panel.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
-      if (!f.length) return
-      const first = f[0]
-      const last = f[f.length - 1]
-      if (e.shiftKey && (document.activeElement === first || document.activeElement === panel.current)) {
-        e.preventDefault()
-        last.focus()
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault()
-        first.focus()
-      }
-    }
-    window.addEventListener('keydown', onKey)
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', esc)
     return () => {
-      window.removeEventListener('keydown', onKey)
-      lockScroll(false)
+      window.removeEventListener('keydown', esc)
       lastFocus.current?.focus?.()
     }
   }, [open, setOpen])
@@ -107,7 +89,7 @@ export default function OrderTicket() {
                 19<b>3</b>97
               </span>
             </a>
-            <a className="cta cta--green" href={ORDER_WEB(lang)} target="_blank" rel="noopener noreferrer">
+            <a className="cta cta--green" href={ORDER_WEB(lang)} target="_blank" rel="noopener">
               {t.ticketWeb}
             </a>
             {lines.length > 0 && (

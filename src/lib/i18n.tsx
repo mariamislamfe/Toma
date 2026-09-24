@@ -23,6 +23,9 @@ const copy = {
     receiptItems: ['رز', 'عدس', 'مكرونة', 'حمص', 'صلصة', 'دقة', 'بصل محمّر'],
     receiptTotal: 'الحساب',
     receiptThanks: 'بالهنا والشفا',
+    motionOff: 'الحركة متوقفة على جهازك',
+    motionOn: 'شغّل الحركة',
+    motionToggle: 'الحركة',
 
     sauceKicker: 'السر في',
     sauceWord: 'الصلصة',
@@ -108,6 +111,9 @@ const copy = {
     receiptItems: ['Rice', 'Lentils', 'Pasta', 'Chickpeas', 'Sauce', 'Da’a', 'Crispy onions'],
     receiptTotal: 'Total',
     receiptThanks: 'Enjoy your meal',
+    motionOff: 'Motion is off on your device',
+    motionOn: 'Turn motion on',
+    motionToggle: 'Motion',
 
     sauceKicker: 'The secret is the',
     sauceWord: 'Sauce',
@@ -193,7 +199,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     try {
       const q = new URLSearchParams(location.search).get('lang')
       if (q === 'en' || q === 'ar') return q
-      return localStorage.getItem('toma-lang') === 'en' ? 'en' : 'ar'
+      return (localStorage.getItem('toma-lang') as Lang) || 'ar'
     } catch {
       return 'ar'
     }
@@ -223,7 +229,6 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   return <I18n.Provider value={value}>{children}</I18n.Provider>
 }
 
-// eslint-disable-next-line react-refresh/only-export-components -- provider and its hook live together on purpose
 export function useI18n() {
   const c = useContext(I18n)
   if (!c) throw new Error('useI18n outside provider')

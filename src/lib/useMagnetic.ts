@@ -1,11 +1,11 @@
 import { useEffect, type RefObject } from 'react'
-import { isCoarse } from './motion'
+import { isCoarse, prefersReducedMotion } from './motion'
 
 /** Subtle pull toward the cursor on fine pointers. */
 export function useMagnetic(ref: RefObject<HTMLElement | null>, strength = 0.28) {
   useEffect(() => {
     const el = ref.current
-    if (!el || isCoarse()) return
+    if (!el || isCoarse() || prefersReducedMotion()) return
     let raf = 0
     const move = (e: PointerEvent) => {
       const r = el.getBoundingClientRect()

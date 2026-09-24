@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useI18n } from '../lib/i18n'
 import { APP_LINKS } from '../data/brand'
 import { byId, categories } from '../data/menu'
-import { ScrollTrigger } from '../lib/motion'
+import { ScrollTrigger, useReducedMotion } from '../lib/motion'
 import './app.css'
 
 const SCREEN = [2, 3, 7, 67, 8, 55, 22, 15]
@@ -10,7 +10,7 @@ const SCREEN = [2, 3, 7, 67, 8, 55, 22, 15]
 function Badge({ href, src, alt }: { href: string | null; src: string; alt: string }) {
   const img = <img src={src} alt={alt} width={160} height={48} loading="lazy" />
   return href ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="ap__badge">
+    <a href={href} target="_blank" rel="noopener" className="ap__badge">
       {img}
     </a>
   ) : (
@@ -20,9 +20,11 @@ function Badge({ href, src, alt }: { href: string | null; src: string; alt: stri
 
 export default function AppPhone() {
   const { t, lang, num } = useI18n()
+  const reduced = useReducedMotion()
   const root = useRef<HTMLElement>(null)
 
   useEffect(() => {
+    if (reduced) return
     const el = root.current!
     const phone = el.querySelector<HTMLElement>('.ap__phone')!
     const screen = el.querySelector<HTMLElement>('.ap__scroll')!
@@ -42,10 +44,10 @@ export default function AppPhone() {
       },
     })
     return () => trig.kill()
-  }, [])
+  }, [reduced])
 
   return (
-    <section id="app" ref={root} className="ap" aria-labelledby="ap-title">
+    <section id="app" ref={root} className={`ap ${reduced ? 'is-static' : ''}`} aria-labelledby="ap-title">
       <div className="ap__pin">
         <div className="ap__copy">
           <p className="kicker" data-reveal="side">{t.appKicker}</p>
@@ -66,11 +68,11 @@ export default function AppPhone() {
             <div className="ap__screen">
               <div className="ap__scroll">
                 <div className="ap__bar">
-                  <img src="/brand/logo.svg" alt="" width={150} height={57} />
+                  <img src="/brand/logo.svg" alt="" width={90} height={34} />
                   <span className="ap__city">{lang === 'ar' ? 'القاهرة' : 'Cairo'} ▾</span>
                 </div>
                 <div className="ap__promo">
-                  <img src="/food/p-67-sm.webp" alt="" width={480} height={369} loading="lazy" decoding="async" />
+                  <img src="/food/p-67.webp" alt="" loading="lazy" />
                 </div>
                 <div className="ap__chips">
                   {categories.slice(0, 4).map((c, i) => (
@@ -84,7 +86,7 @@ export default function AppPhone() {
                     const p = byId(id)
                     return (
                       <div key={id} className="ap__card">
-                        <img src={p.img.replace('.webp', '-sm.webp')} alt="" width={480} height={480} loading="lazy" decoding="async" />
+                        <img src={p.img} alt="" loading="lazy" />
                         <b>{lang === 'ar' ? p.ar : p.en}</b>
                         <span className="price">
                           {num(p.price)} {t.currency}
@@ -103,8 +105,8 @@ export default function AppPhone() {
               </div>
             </div>
           </div>
-          <img className="ap__float ap__float--a" src="/food/p-29-sm.webp" alt="" width={194} height={480} loading="lazy" decoding="async" />
-          <img className="ap__float ap__float--b" src="/food/p-35-sm.webp" alt="" width={302} height={480} loading="lazy" decoding="async" />
+          <img className="ap__float ap__float--a" src="/food/p-29.webp" alt="" loading="lazy" />
+          <img className="ap__float ap__float--b" src="/food/p-35.webp" alt="" loading="lazy" />
         </div>
       </div>
     </section>

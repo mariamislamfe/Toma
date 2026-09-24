@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../lib/i18n'
 import { useOrder } from '../lib/order'
-import { byId, srcSet } from '../data/menu'
+import { byId } from '../data/menu'
 import { onionSprites } from '../lib/onionSprites'
-import { ScrollTrigger, isLite, span, useMedia } from '../lib/motion'
+import { ScrollTrigger, isLite, span, useMedia, useReducedMotion } from '../lib/motion'
 import './sauce.css'
 
 /**
@@ -36,6 +36,7 @@ function floodPath(W: number, H: number, level: number, seed: number, drips = 9)
 export default function SauceCrunch() {
   const { t, lang, num } = useI18n()
   const { add } = useOrder()
+  const reduced = useReducedMotion()
   const mobile = useMedia('(max-width: 760px)')
   const root = useRef<HTMLElement>(null)
   const sauceP = useRef<SVGPathElement>(null)
@@ -43,7 +44,7 @@ export default function SauceCrunch() {
   const onionP = useRef<SVGPathElement>(null)
   const sheets = useRef<(SVGSVGElement | null)[]>([])
   const rain = useRef<HTMLCanvasElement>(null)
-  const [phase, setPhase] = useState(0)
+  const [phase, setPhase] = useState(reduced ? 2 : 0)
   const [added, setAdded] = useState<number | null>(null)
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function SauceCrunch() {
     const c = cv.getContext('2d')!
     let W = 0
     let H = 0
-    let q = 0
+    let q = reduced ? 1 : 0
     let sprites: HTMLCanvasElement[] = []
     const N = isLite ? 26 : mobile ? 50 : 110
     const drops = Array.from({ length: N }, (_, i) => ({
@@ -65,13 +66,9 @@ export default function SauceCrunch() {
     }))
 
     const size = () => {
-      // phones fire resize when the address bar slides; only rebuild on a real size change
-      const nW = el.clientWidth
-      const nH = window.innerHeight
-      if (W && nW === W && Math.abs(nH - H) < 160) return
       lv.fill(-1)
-      W = nW
-      H = nH
+      W = el.clientWidth
+      H = window.innerHeight
       const specs: [SVGPathElement, number, number][] = [
         [sauceP.current!, 1, isLite ? 5 : mobile ? 6 : 10],
         [daaP.current!, 7, isLite ? 4 : mobile ? 5 : 8],
@@ -91,14 +88,14 @@ export default function SauceCrunch() {
 
     let visible = false
     let raf = 0
-    const t0 = performance.now()
+    let t0 = performance.now()
 
     const drawRain = (time: number) => {
       c.clearRect(0, 0, W, H)
       const amt = span(q, 0.62, 0.72)
       if (amt <= 0) return
       c.globalAlpha = amt
-      const tt = time * 0.00006
+      const tt = reduced ? 0 : time * 0.00006
       for (const d of drops) {
         const y = (((d.o + q * 2.2 * d.v + tt * d.v) % 1.3) - 0.15) * H
         const x = d.x * W + Math.sin(y * 0.01 + d.r) * 14
@@ -146,7 +143,9 @@ export default function SauceCrunch() {
 
     size()
     window.addEventListener('resize', size)
-    const trig = ScrollTrigger.create({
+    const trig = reduced
+      ? undefined
+      : ScrollTrigger.create({
           trigger: el,
           start: 'top top',
           end: 'bottom bottom',
@@ -166,9 +165,9 @@ export default function SauceCrunch() {
     return () => {
       window.removeEventListener('resize', size)
       cancelAnimationFrame(raf)
-      trig.kill()
+      trig?.kill()
     }
-  }, [mobile])
+  }, [mobile, reduced])
 
   const extra = (id: number) => {
     const p = byId(id)
@@ -190,7 +189,7 @@ export default function SauceCrunch() {
   }
 
   return (
-    <section id="sauce" ref={root} className="sc" data-phase={phase} aria-labelledby="sc-title">
+    <section id="sauce" ref={root} className={`sc ${reduced ? 'is-static' : ''}`} data-phase={phase} aria-labelledby="sc-title">
       <div className="sc__pin">
         <div className="sc__flood" aria-hidden="true">
         <svg ref={(n) => { sheets.current[0] = n }} className="sc__sheet" preserveAspectRatio="none">
@@ -222,33 +221,33 @@ export default function SauceCrunch() {
         <canvas ref={rain} className="sc__rain" aria-hidden="true" />
 
         {/* 1 · sauce */}
-        <div className="sc__scene sc__scene--sauce" {...(phase !== 0 && { inert: true, "aria-hidden": true })}>
+        <div className="sc__scene sc__scene--sauce" aria-hidden={phase !== 0}>
           <p className="sc__kicker display">{t.sauceKicker}</p>
           <h2 id="sc-title" className="sc__word display">
             {t.sauceWord}
           </h2>
           <p className="sc__line">{t.sauceLine}</p>
-          <img className="sc__img sc__img--pouch" src="/food/p-21.webp" srcSet={srcSet('/food/p-21.webp')} sizes="(max-width: 760px) 46vw, 22vw" decoding="async" alt={lang === 'ar' ? 'صلصة تومة' : 'TOMA tomato sauce'} loading="lazy" />
-          <img className="sc__img sc__img--bowl" src="/food/p-56.webp" srcSet={srcSet('/food/p-56.webp')} sizes="(max-width: 760px) 46vw, 22vw" decoding="async" alt="" loading="lazy" />
+          <img className="sc__img sc__img--pouch" src="/food/p-21.webp" alt={lang === 'ar' ? 'صلصة تومة' : 'TOMA tomato sauce'} loading="lazy" />
+          <img className="sc__img sc__img--bowl" src="/food/p-56.webp" alt="" loading="lazy" />
           {extra(21)}
         </div>
 
         {/* 2 · da'a */}
-        <div className="sc__scene sc__scene--daa" {...(phase !== 1 && { inert: true, "aria-hidden": true })}>
+        <div className="sc__scene sc__scene--daa" aria-hidden={phase !== 1}>
           <h2 className="sc__word display">{t.daaWord}</h2>
           <p className="sc__line">{t.daaLine}</p>
-          <img className="sc__img sc__img--daa" src="/food/p-58.webp" srcSet={srcSet('/food/p-58.webp')} sizes="(max-width: 760px) 46vw, 22vw" decoding="async" alt={lang === 'ar' ? 'دقة تومة' : 'TOMA da’a'} loading="lazy" />
-          <img className="sc__img sc__img--sachet" src="/food/p-36.webp" srcSet={srcSet('/food/p-36.webp')} sizes="(max-width: 760px) 46vw, 22vw" decoding="async" alt="" loading="lazy" />
+          <img className="sc__img sc__img--daa" src="/food/p-58.webp" alt={lang === 'ar' ? 'دقة تومة' : 'TOMA da’a'} loading="lazy" />
+          <img className="sc__img sc__img--sachet" src="/food/p-36.webp" alt="" loading="lazy" />
           {extra(58)}
         </div>
 
         {/* 3 · crunch */}
-        <div className="sc__scene sc__scene--crunch" {...(phase !== 2 && { inert: true, "aria-hidden": true })}>
+        <div className="sc__scene sc__scene--crunch" aria-hidden={phase !== 2}>
           <h2 className="sc__word display sc__crunch">
             {t.crunchWord}
           </h2>
           <p className="sc__line">{t.crunchLine}</p>
-          <img className="sc__img sc__img--bag" src="/food/p-20.webp" srcSet={srcSet('/food/p-20.webp')} sizes="(max-width: 760px) 46vw, 22vw" decoding="async" alt={lang === 'ar' ? 'تقلية تومة' : 'TOMA fried onions'} loading="lazy" />
+          <img className="sc__img sc__img--bag" src="/food/p-20.webp" alt={lang === 'ar' ? 'تقلية تومة' : 'TOMA fried onions'} loading="lazy" />
           {extra(20)}
         </div>
       </div>
