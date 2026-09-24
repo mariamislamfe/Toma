@@ -1,0 +1,67 @@
+.mq {
+  position: relative;
+  z-index: 5;
+  margin: -34px -4vw;
+  padding: 16px 0;
+  overflow: hidden;
+  transform: rotate(-2.2deg);
+  background: var(--orange);
+  color: var(--ink);
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+.mq--rev {
+  transform: rotate(1.8deg);
+}
+.mq--plum {
+  background: var(--plum);
+  color: var(--green);
+}
+.mq__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+/* touch devices: the compositor runs the loop, the main thread does nothing */
+.mq--css .mq__track {
+  animation: mq-loop 28s linear infinite;
+}
+.mq--css.mq--rev .mq__track {
+  animation-direction: reverse;
+}
+@keyframes mq-loop {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.mq__run {
+  display: flex;
+  flex: none;
+}
+.mq__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  padding-inline-end: 28px;
+  font-size: clamp(30px, 3.4vw, 54px);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.mq__item i {
+  font-style: normal;
+  font-size: 0.55em;
+  color: var(--purple);
+}
+.mq--plum .mq__item i {
+  color: var(--orange);
+}
+@media (max-width: 760px) {
+  .mq {
+    margin: -22px -6vw;
+    padding: 10px 0;
+  }
+  .mq__item {
+    gap: 18px;
+    padding-inline-end: 18px;
+  }
+}

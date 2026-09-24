@@ -1,0 +1,276 @@
+.sc {
+  position: relative;
+  height: 420vh;
+  background: var(--plum);
+}
+.sc.is-static {
+  height: auto;
+}
+.sc__pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--plum);
+  color: var(--cream);
+}
+.sc.is-static .sc__pin {
+  position: relative;
+  background: #2a0f04;
+}
+.sc__flood,
+.sc__rain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.sc__rain {
+  z-index: 1;
+}
+.sc__flood {
+  overflow: hidden;
+}
+.sc__sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 125%;
+  transform: translate3d(0, -130%, 0);
+  will-change: transform;
+}
+
+.sc__scene {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  padding: calc(var(--nav-h) + 24px) var(--gutter) 40px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s, visibility 0s 0.5s;
+}
+.sc[data-phase='0'] .sc__scene--sauce,
+.sc[data-phase='1'] .sc__scene--daa,
+.sc[data-phase='2'] .sc__scene--crunch {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s;
+}
+
+.sc__kicker {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 54px);
+  color: var(--orange);
+}
+.sc__word {
+  margin: 0;
+  font-size: clamp(110px, 21vw, 360px);
+  line-height: 0.9;
+  position: relative;
+  z-index: 1;
+}
+.sc__line {
+  max-width: 30ch;
+  margin: 18px 0 26px;
+  font-size: clamp(17px, 1.6vw, 22px);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.sc__img {
+  max-height: 42vh;
+  object-fit: contain;
+  position: absolute;
+  z-index: 0;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.4));
+  transition: transform 0.9s var(--ease-spring), opacity 0.4s;
+  opacity: 0;
+}
+.sc__scene--sauce .sc__img--pouch {
+  width: clamp(150px, 17vw, 280px);
+  inset-inline-start: 7vw;
+  top: 22vh;
+  transform: translateY(40vh) rotate(-30deg);
+}
+.sc__scene--sauce .sc__img--bowl {
+  width: clamp(190px, 22vw, 360px);
+  inset-inline-end: 6vw;
+  bottom: 8vh;
+  transform: translateY(40vh) rotate(20deg);
+}
+.sc[data-phase='0'] .sc__img--pouch {
+  opacity: 1;
+  transform: rotate(-12deg);
+  transition-delay: 0.15s;
+  animation: bob 3.4s ease-in-out 1s infinite;
+}
+@keyframes bob {
+  50% {
+    translate: 0 -14px;
+  }
+}
+.sc[data-phase='0'] .sc__img--bowl {
+  opacity: 1;
+  transform: rotate(6deg);
+  transition-delay: 0.25s;
+}
+
+.sc__scene--daa .sc__word {
+  color: var(--orange);
+  -webkit-text-stroke: 3px var(--sauce-deep);
+  paint-order: stroke fill;
+}
+.sc__img--daa {
+  width: clamp(190px, 22vw, 360px);
+  inset-inline-start: 6vw;
+  bottom: 10vh;
+  transform: translateX(-30vw) rotate(-20deg);
+}
+[dir='ltr'] .sc__img--daa {
+  transform: translateX(30vw) rotate(20deg);
+}
+.sc__img--sachet {
+  width: clamp(110px, 11vw, 180px);
+  inset-inline-end: 9vw;
+  top: 20vh;
+  transform: translateY(-50vh) rotate(40deg);
+}
+.sc[data-phase='1'] .sc__img--daa {
+  opacity: 1;
+  transform: rotate(-4deg);
+}
+.sc[data-phase='1'] .sc__img--sachet {
+  opacity: 1;
+  transform: rotate(14deg);
+  transition-delay: 0.1s;
+}
+
+.sc__scene--crunch .sc__word {
+  color: #e39a45;
+  text-shadow: 0 6px 0 #1a0801;
+}
+.sc[data-phase='2'] .sc__crunch {
+  animation: crunch 0.6s steps(2) 0.2s 2;
+}
+@keyframes crunch {
+  0% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(-6px, 3px) rotate(-1.5deg);
+  }
+  50% {
+    transform: translate(5px, -2px) rotate(1deg);
+  }
+  75% {
+    transform: translate(-3px, -3px) rotate(-0.5deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+.sc__img--bag {
+  width: clamp(180px, 20vw, 320px);
+  inset-inline-end: 7vw;
+  bottom: 9vh;
+  transform: translateY(60vh) rotate(25deg);
+}
+.sc[data-phase='2'] .sc__img--bag {
+  opacity: 1;
+  transform: rotate(-7deg);
+  animation: bob 3s ease-in-out 1s infinite;
+}
+
+/* add-an-extra pill */
+.sc__add {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 6px 8px 6px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 16px;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s var(--ease-spring), background 0.2s;
+}
+[dir='rtl'] .sc__add {
+  padding: 6px 22px 6px 8px;
+}
+.sc__add b {
+  display: grid;
+  place-items: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--orange);
+  font-weight: 400;
+  font-size: 18px;
+}
+.sc__add:hover {
+  transform: translateY(-2px) rotate(-1deg);
+}
+.sc__add:active {
+  transform: translateY(3px);
+}
+.sc__add.is-added {
+  background: var(--green);
+}
+
+.sc.is-static .sc__scene {
+  position: relative;
+  opacity: 1 !important;
+  visibility: visible;
+  min-height: 80vh;
+}
+.sc.is-static .sc__img {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 760px) {
+  .sc {
+    height: 340vh;
+  }
+  .sc__scene {
+    place-content: start center;
+    padding-top: calc(var(--nav-h) + 8vh);
+  }
+  .sc__word {
+    font-size: clamp(88px, 30vw, 150px);
+  }
+  .sc__scene--sauce .sc__img--pouch,
+  .sc__img--sachet {
+    top: auto;
+    bottom: 5vh;
+    inset-inline-start: 6vw;
+    inset-inline-end: auto;
+    width: 30vw;
+  }
+  .sc__scene--sauce .sc__img--bowl,
+  .sc__img--daa,
+  .sc__img--bag {
+    bottom: 4vh;
+    inset-inline-end: 4vw;
+    inset-inline-start: auto;
+    width: 46vw;
+  }
+  .sc__add {
+    font-size: 15px;
+  }
+}
