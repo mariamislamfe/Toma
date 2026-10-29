@@ -3,3 +3,10 @@ dist
 raw
 *.tsbuildinfo
 *.tmp.mjs
+
+# Private / local files
+.env
+.env*.local
+CLAUDE.md
+AGENTS.md
+.claude/
